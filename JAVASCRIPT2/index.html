@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Cost Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    
+        
+      
+            
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Shop Cost Calculator</h1>
+        
+        <div class="item-group">
+            <label for="bread">🍞 Bread <span class="item-icon">🥖</span></label>
+            <div class="price">3,000 UGX per loaf</div>
+            <input type="number" id="bread" min="0" placeholder="Enter quantity">
+        </div>
+
+        <div class="item-group">
+            <label for="milk">🥛 Milk <span class="item-icon">🍼</span></label>
+            <div class="price">2,500 UGX per unit</div>
+            <input type="number" id="milk" min="0" placeholder="Enter quantity">
+        </div>
+
+        <div class="item-group">
+            <label for="eggs">🥚 Eggs <span class="item-icon">🐔</span></label>
+            <div class="price">500 UGX each</div>
+            <input type="number" id="eggs" min="0" placeholder="Enter quantity">
+        </div>
+
+        <div class="button-container">
+            <button onclick="calculateTotal()">Calculate Total</button>
+        </div>
+
+        <div id="result" class="result">
+            Enter quantities and click "Calculate Total" to see the price.
+        </div>
+    </div>
+
+    <script>
+        // Product prices
+        const PRICES = {
+            bread: 3000,
+            milk: 2500,
+            eggs: 500
+        };
+
+        function calculateTotal() {
+            // Get input elements
+            const breadInput = document.getElementById('bread');
+            const milkInput = document.getElementById('milk');
+            const eggsInput = document.getElementById('eggs');
+            const resultDiv = document.getElementById('result');
+
+            // Get values and convert to numbers
+            const breadQty = parseFloat(breadInput.value) || 0;
+            const milkQty = parseFloat(milkInput.value) || 0;
+            const eggsQty = parseFloat(eggsInput.value) || 0;
+
+            // Validate inputs
+            if (breadInput.value.trim() === '' && milkInput.value.trim() === '' && eggsInput.value.trim() === '') {
+                showError("Please enter at least one quantity.");
+                return;
+            }
+
+            if (breadQty < 0 || milkQty < 0 || eggsQty < 0) {
+                showError("❌ Quantity cannot be negative. Please enter valid amounts.");
+                return;
+            }
+
+            if (isNaN(breadQty) || isNaN(milkQty) || isNaN(eggsQty)) {
+                showError("❌ Please enter valid numeric values only.");
+                return;
+            }
+
+            // Calculate costs
+            const breadCost = breadQty * PRICES.bread;
+            const milkCost = milkQty * PRICES.milk;
+            const eggsCost = eggsQty * PRICES.eggs;
+            const total = breadCost + milkCost + eggsCost;
+
+            // Display breakdown if any item is selected
+            let breakdown = "";
+            if (breadQty > 0) breakdown += `${breadQty} Bread × 3,000 = ${formatCurrency(breadCost)}<br>`;
+            if (milkQty > 0) breakdown += `${milkQty} Milk × 2,500 = ${formatCurrency(milkCost)}<br>`;
+            if (eggsQty > 0) breakdown += `${eggsQty} Eggs × 500 = ${formatCurrency(eggsCost)}<br>`;
+
+            // Show result
+            if (total === 0) {
+                resultDiv.innerHTML = "🧾 No items selected. Total: <strong>0 UGX</strong>";
+                resultDiv.className = "result";
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="margin-bottom: 10px; font-size: 16px; color: #2c3e50;">
+                        ${breakdown}
+                    </div>
+                    <hr style="margin: 10px 0; border: none; border-top: 1px dashed #a5d6a7;">
+                    <div style="font-size: 22px;">
+                        💰 Total Amount: <strong style="color: #27ae60;">${formatCurrency(total)}</strong>
+                    </div>
+                `;
+                resultDiv.className = "result";
+            }
+        }
+
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = "result error";
+        }
+
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-US') + " UGX";
+        }
+
+        // Allow calculation with Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateTotal();
+            }
+        });
+    </script>
+</body>
+</html>
